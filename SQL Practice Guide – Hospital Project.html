@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<!-- saved from url=(0096)file:///C:/Users/bhala/OneDrive/Documents/Claude/Projects/Learn%20SQL/SQL_Practice_Guide.html#t1 -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL Practice Guide – Hospital Project</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --card: #21253a;
+    --border: #2e3352;
+    --accent: #4f8ef7;
+    --accent2: #a78bfa;
+    --green: #34d399;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --code-bg: #0d1117;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; line-height: 1.7; }
+
+  /* ── Header ── */
+  .site-header {
+    background: linear-gradient(135deg, #1e2a5e, #3b1f6e);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    border-bottom: 2px solid var(--accent);
+  }
+  .site-header h1 { font-size: 2.2rem; color: #fff; }
+  .site-header p { color: #c4b5fd; margin-top: .5rem; }
+  .badge-row { display: flex; gap: .6rem; justify-content: center; flex-wrap: wrap; margin-top: 1rem; }
+  .badge { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); border-radius: 20px; padding: .25rem .9rem; font-size: .78rem; color: #e0d7ff; }
+
+  /* ── Layout ── */
+  .container { max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+  /* ── Nav ── */
+  .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 2.5rem; }
+  .toc h2 { color: var(--accent); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: .5rem; }
+  .toc-grid a { display: block; padding: .45rem .8rem; border-radius: 8px; background: var(--card); color: var(--text); text-decoration: none; font-size: .85rem; border: 1px solid var(--border); transition: .2s; }
+  .toc-grid a:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* ── Section ── */
+  .topic { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 2.5rem; overflow: hidden; }
+  .topic-header { background: linear-gradient(90deg, #1e2a5e, #2d1f6e); padding: 1.2rem 1.5rem; display: flex; align-items: center; gap: 1rem; }
+  .topic-num { background: var(--accent); color: #fff; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+  .topic-header h2 { font-size: 1.25rem; color: #fff; }
+  .topic-header .subtopics { font-size: .78rem; color: #c4b5fd; margin-top: .2rem; }
+  .topic-body { padding: 1.5rem; }
+
+  /* ── Sub-sections ── */
+  .section-label { font-size: .7rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); font-weight: 700; margin-bottom: .6rem; margin-top: 1.4rem; }
+  .section-label:first-child { margin-top: 0; }
+
+  /* ── Explain box ── */
+  .explain-box { background: var(--card); border-left: 3px solid var(--green); border-radius: 0 8px 8px 0; padding: 1rem 1.2rem; margin-bottom: .8rem; }
+  .explain-box.tamil { border-left-color: var(--yellow); }
+  .explain-box .lang-tag { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: .4rem; }
+  .explain-box.tamil .lang-tag { color: var(--yellow); }
+  .explain-box:not(.tamil) .lang-tag { color: var(--green); }
+
+  /* ── Code ── */
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; overflow-x: auto; font-size: .85rem; margin: .8rem 0; }
+  code { font-family: 'Consolas', 'Courier New', monospace; color: #e2e8f0; }
+  .kw { color: #79c0ff; font-weight: 700; }
+  .fn { color: #d2a8ff; }
+  .str { color: #a5d6ff; }
+  .num { color: #f2cc60; }
+  .cm { color: #8b949e; font-style: italic; }
+
+  /* ── Output table ── */
+  .output-label { font-size: .75rem; color: var(--muted); margin-bottom: .3rem; font-style: italic; }
+  table.result { border-collapse: collapse; width: 100%; font-size: .85rem; margin-bottom: 1rem; }
+  table.result th { background: #1e2a5e; color: #a5b4fc; padding: .45rem .8rem; text-align: left; border: 1px solid var(--border); font-size: .78rem; text-transform: uppercase; letter-spacing: .5px; }
+  table.result td { padding: .45rem .8rem; border: 1px solid var(--border); color: var(--text); }
+  table.result tr:nth-child(even) td { background: rgba(255,255,255,.03); }
+
+  /* ── Questions ── */
+  .questions { margin-top: 1.2rem; }
+  .question-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.2rem; margin-bottom: .8rem; }
+  .q-num { display: inline-block; background: var(--accent2); color: #fff; border-radius: 4px; padding: .1rem .5rem; font-size: .75rem; font-weight: 700; margin-bottom: .5rem; }
+  .q-text { color: var(--text); margin-bottom: .7rem; }
+  .reveal-btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; padding: .35rem .9rem; font-size: .8rem; cursor: pointer; transition: .2s; }
+  .reveal-btn:hover { background: var(--accent); color: #fff; }
+  .answer { display: none; margin-top: .8rem; border-top: 1px solid var(--border); padding-top: .8rem; }
+  .answer.visible { display: block; }
+  .answer pre { margin-top: .5rem; }
+  .answer-label { font-size: .75rem; color: var(--green); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: .4rem; }
+
+  /* ── Project box ── */
+  .project-box { background: linear-gradient(135deg, #0f2027, #1a1f3c); border: 1px solid #4f8ef7; border-radius: 10px; padding: 1.2rem 1.4rem; margin-top: 1.5rem; }
+  .project-box .proj-title { color: var(--accent); font-weight: 700; font-size: .85rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: .6rem; display: flex; align-items: center; gap: .5rem; }
+  .project-box .proj-title span { background: var(--accent); color: #fff; border-radius: 4px; padding: .1rem .5rem; font-size: .7rem; }
+  .project-box p { font-size: .9rem; color: #c4d4f0; margin-bottom: .5rem; }
+  .project-box ul { padding-left: 1.2rem; font-size: .9rem; color: #c4d4f0; }
+  .project-box ul li { margin-bottom: .3rem; }
+
+  /* ── Schema box ── */
+  .schema-intro { background: var(--card); border: 1px solid var(--accent); border-radius: 10px; padding: 1.4rem; margin-bottom: 2.5rem; }
+  .schema-intro h3 { color: var(--accent); margin-bottom: 1rem; }
+  .schema-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+  .schema-table { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: .8rem 1rem; }
+  .schema-table .tname { color: var(--accent2); font-weight: 700; font-size: .9rem; margin-bottom: .5rem; }
+  .schema-table .col { font-size: .8rem; color: var(--muted); padding: .15rem 0; border-bottom: 1px solid var(--border); }
+  .schema-table .col:last-child { border-bottom: none; }
+  .schema-table .col .cname { color: var(--text); }
+  .schema-table .col .ctype { color: var(--yellow); font-size: .73rem; }
+
+  /* ── Progress tracker ── */
+  .progress-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.5rem; margin-bottom: 2rem; }
+  .progress-bar h3 { font-size: .85rem; color: var(--muted); margin-bottom: .6rem; }
+  .bar-track { background: var(--border); border-radius: 99px; height: 8px; overflow: hidden; }
+  .bar-fill { background: linear-gradient(90deg, var(--accent), var(--accent2)); height: 100%; border-radius: 99px; transition: width .5s; }
+  .bar-label { font-size: .8rem; color: var(--muted); margin-top: .4rem; }
+
+  /* ── Footer ── */
+  footer { text-align: center; color: var(--muted); font-size: .8rem; padding: 2rem; border-top: 1px solid var(--border); }
+
+  /* ── Responsive ── */
+  @media(max-width:600px) {
+    .site-header h1 { font-size: 1.5rem; }
+    .topic-body { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <h1>🏥 SQL Practice Guide</h1>
+  <p>Learn SQL with a Hospital Project • English &amp; Tamil Explanations</p>
+  <div class="badge-row">
+    <span class="badge">10 Topics</span>
+    <span class="badge">Practice Questions</span>
+    <span class="badge">Hospital Project</span>
+    <span class="badge">Bilingual (EN + தமிழ்)</span>
+    <span class="badge">Hidden Answers</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Progress -->
+  <div class="progress-bar">
+    <h3>Your Progress</h3>
+    <div class="bar-track"><div class="bar-fill" id="progFill" style="width: 100%;"></div></div>
+    <div class="bar-label" id="progLabel">10 of 10 topics visited</div>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <h2>📋 Topics</h2>
+    <div class="toc-grid">
+      <a href="file:///C:/Users/bhala/OneDrive/Documents/Claude/Projects/Learn%20SQL/SQL_Practice_Guide.html#t1">1. Basics</a>
+      <a href="file:///C:/Users/bhala/OneDrive/Documents/Claude/Projects/Learn%20SQL/SQL_Practice_Guide.html#t2">2. Filtering Data</a>
+      <a href="file:///C:/Users/bhala/OneDrive/Documents/Claude/Projects/Learn%20SQL/SQL_Practice_Guide.html#t3">3. Sorting &amp; Limiting</a>
+      <a href="file:///C:/Users/bhala/OneDrive/Documents/Claude/Projects/Learn%20SQL/SQL_Practice_Guide.html#t4">4. Aggregate Functions</a>
+      <a href="file:///C:/Users/bhala/OneDrive/Documents/Claude/Projects/Learn%20SQL/SQL_Practice_Guide.html#t5">5. Grouping Data</a>
+      <a href="file:///C:/Users/bhala/OneDrive/Documents/Claude/Projects/Learn%20SQL/SQL_Practice_Guide.html#t6">6. Joins</a>
+      <a href="file:///C:/Users/bhala/OneDrive/Documents/Claude/Projects/Learn%20SQL/SQL_Practice_Guide.html#t7">7. Subqueries</a>
+      <a href="file:///C:/Users/bhala/OneDrive/Documents/Claude/Projects/Learn%20SQL/SQL_Practice_Guide.html#t8">8. Set Operators</a>
+      <a href="file:///C:/Users/bhala/OneDrive/Documents/Claude/Projects/Learn%20SQL/SQL_Practice_Guide.html#t9">9. Window Functions</a>
+      <a href="file:///C:/Users/bhala/OneDrive/Documents/Claude/Projects/Learn%20SQL/SQL_Practice_Guide.html#t10">10. Advanced Topics</a>
+    </div>
+  </div>
+
+  <!-- Hospital Schema -->
+  <div class="schema-intro">
+    <h3>🏥 Hospital Project — Database Schema</h3>
+    <p style="color:var(--muted);font-size:.88rem;margin-bottom:1rem;">All practice questions and project tasks use these 4 tables. Think of this as a real hospital system!</p>
+    <div class="schema-grid">
+      <div class="schema-table">
+        <div class="tname">patients</div>
+        <div class="col"><span class="cname">patient_id</span> <span class="ctype">INT (PK)</span></div>
+        <div class="col"><span class="cname">name</span> <span class="ctype">VARCHAR</span></div>
+        <div class="col"><span class="cname">age</span> <span class="ctype">INT</span></div>
+        <div class="col"><span class="cname">gender</span> <span class="ctype">VARCHAR</span></div>
+        <div class="col"><span class="cname">city</span> <span class="ctype">VARCHAR</span></div>
+        <div class="col"><span class="cname">blood_group</span> <span class="ctype">VARCHAR</span></div>
+      </div>
+      <div class="schema-table">
+        <div class="tname">doctors</div>
+        <div class="col"><span class="cname">doctor_id</span> <span class="ctype">INT (PK)</span></div>
+        <div class="col"><span class="cname">name</span> <span class="ctype">VARCHAR</span></div>
+        <div class="col"><span class="cname">department</span> <span class="ctype">VARCHAR</span></div>
+        <div class="col"><span class="cname">experience_yrs</span> <span class="ctype">INT</span></div>
+        <div class="col"><span class="cname">salary</span> <span class="ctype">DECIMAL</span></div>
+      </div>
+      <div class="schema-table">
+        <div class="tname">appointments</div>
+        <div class="col"><span class="cname">appt_id</span> <span class="ctype">INT (PK)</span></div>
+        <div class="col"><span class="cname">patient_id</span> <span class="ctype">INT (FK)</span></div>
+        <div class="col"><span class="cname">doctor_id</span> <span class="ctype">INT (FK)</span></div>
+        <div class="col"><span class="cname">appt_date</span> <span class="ctype">DATE</span></div>
+        <div class="col"><span class="cname">status</span> <span class="ctype">VARCHAR</span></div>
+        <div class="col"><span class="cname">fee</span> <span class="ctype">DECIMAL</span></div>
+      </div>
+      <div class="schema-table">
+        <div class="tname">departments</div>
+        <div class="col"><span class="cname">dept_id</span> <span class="ctype">INT (PK)</span></div>
+        <div class="col"><span class="cname">dept_name</span> <span class="ctype">VARCHAR</span></div>
+        <div class="col"><span class="cname">location</span> <span class="ctype">VARCHAR</span></div>
+        <div class="col"><span class="cname">head_doctor_id</span> <span class="ctype">INT (FK)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- TOPIC 1: BASICS -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div class="topic" id="t1">
+    <div class="topic-header">
+      <div class="topic-num">1</div>
+      <div>
+        <h2>Basics</h2>
+        <div class="subtopics">What is SQL · Syntax · Data Types · SELECT · DISTINCT · Aliases (AS)</div>
+      </div>
+    </div>
+    <div class="topic-body">
+
+      <div class="section-label">🧒 Explain Like I'm 5</div>
+      <div class="explain-box">
+        <div class="lang-tag">🇬🇧 English</div>
+        Imagine you have a big box of toy cards — each card has a name, age, and colour. SQL is like a magic question you ask the box: <em>"Show me all the cards!"</em> The database is that box, and a table is like one section inside it. <code>SELECT</code> means "show me", and <code>FROM</code> means "from this box".
+      </div>
+      <div class="explain-box tamil">
+        <div class="lang-tag">🇮🇳 தமிழ்</div>
+        கற்பனை செய்து பாரு — உன்னிடம் ஒரு பெரிய பெட்டி இருக்கு, அதில் நிறைய அட்டைகள் இருக்கு (ஒவ்வொரு அட்டையிலும் பெயர், வயது, நிறம் இருக்கு). SQL என்பது அந்த பெட்டியிடம் கேட்கும் ஒரு மாயாஜால கேள்வி: <em>"எல்லா அட்டைகளையும் காட்டு!"</em> Database என்பது அந்த பெட்டி; Table என்பது பெட்டியின் ஒரு பகுதி. <code>SELECT</code> = "காட்டு", <code>FROM</code> = "இந்த பெட்டியிலிருந்து".
+      </div>
+
+      <div class="section-label">📝 Sample Query &amp; Output</div>
+      <pre><code><span class="cm">-- Get all patients</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> patients;
+
+<span class="cm">-- Get only name and age (specific columns)</span>
+<span class="kw">SELECT</span> name, age <span class="kw">FROM</span> patients;
+
+<span class="cm">-- DISTINCT: unique cities only</span>
+<span class="kw">SELECT DISTINCT</span> city <span class="kw">FROM</span> patients;
+
+<span class="cm">-- AS: rename column in output</span>
+<span class="kw">SELECT</span> name <span class="kw">AS</span> <span class="str">patient_name</span>, age <span class="kw">AS</span> years_old <span class="kw">FROM</span> patients;</code></pre>
+      <div class="output-label">▶ Sample Output (patients table)</div>
+      <table class="result">
+        <tbody><tr><th>patient_id</th><th>name</th><th>age</th><th>gender</th><th>city</th><th>blood_group</th></tr>
+        <tr><td>1</td><td>Arjun Kumar</td><td>34</td><td>Male</td><td>Chennai</td><td>O+</td></tr>
+        <tr><td>2</td><td>Priya Sharma</td><td>28</td><td>Female</td><td>Mumbai</td><td>A+</td></tr>
+        <tr><td>3</td><td>Ramesh Babu</td><td>52</td><td>Male</td><td>Chennai</td><td>B+</td></tr>
+        <tr><td>4</td><td>Kavitha Nair</td><td>45</td><td>Female</td><td>Bangalore</td><td>AB+</td></tr>
+        <tr><td>5</td><td>Vikram Singh</td><td>31</td><td>Male</td><td>Mumbai</td><td>O-</td></tr>
+      </tbody></table>
+
+      <div class="section-label">❓ Practice Questions</div>
+      <div class="questions">
+
+        <div class="question-card">
+          <span class="q-num">Q1</span>
+          <div class="q-text">Write a query to display only the <strong>name</strong> and <strong>blood_group</strong> of all patients.</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT</span> name, blood_group <span class="kw">FROM</span> patients;</code></pre>
+            <div class="output-label">▶ Output</div>
+            <table class="result">
+              <tbody><tr><th>name</th><th>blood_group</th></tr>
+              <tr><td>Arjun Kumar</td><td>O+</td></tr>
+              <tr><td>Priya Sharma</td><td>A+</td></tr>
+              <tr><td>Ramesh Babu</td><td>B+</td></tr>
+            </tbody></table>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <span class="q-num">Q2</span>
+          <div class="q-text">Write a query to find all <strong>unique departments</strong> in the doctors table.</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT DISTINCT</span> department <span class="kw">FROM</span> doctors;</code></pre>
+            <div class="output-label">▶ Output</div>
+            <table class="result">
+              <tbody><tr><th>department</th></tr>
+              <tr><td>Cardiology</td></tr>
+              <tr><td>Neurology</td></tr>
+              <tr><td>Orthopaedics</td></tr>
+              <tr><td>Paediatrics</td></tr>
+            </tbody></table>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <span class="q-num">Q3</span>
+          <div class="q-text">Display doctor <strong>name</strong> as <em>"Doctor Name"</em> and <strong>salary</strong> as <em>"Monthly Pay"</em> using aliases.</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT</span> name <span class="kw">AS</span> <span class="str">"Doctor Name"</span>, salary <span class="kw">AS</span> <span class="str">"Monthly Pay"</span>
+<span class="kw">FROM</span> doctors;</code></pre>
+          </div>
+        </div>
+
+      </div><!-- /questions -->
+
+      <div class="project-box">
+        <div class="proj-title">🏥 Hospital Project Task <span>Topic 1</span></div>
+        <p><strong>Task:</strong> Set up your hospital database and explore all 4 tables.</p>
+        <ul>
+          <li>Run <code>SELECT * FROM patients;</code> — how many rows do you see?</li>
+          <li>Run <code>SELECT DISTINCT city FROM patients;</code> — how many unique cities?</li>
+          <li>Use aliases to rename <code>name</code> → <code>Doctor Name</code> and <code>department</code> → <code>Specialisation</code> in the doctors table.</li>
+        </ul>
+        <p style="margin-top:.6rem;font-size:.82rem;color:#7ba4e8;">💡 <em>This is your first building block. Every future query will build on these tables!</em></p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- TOPIC 2: FILTERING DATA -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div class="topic" id="t2">
+    <div class="topic-header">
+      <div class="topic-num">2</div>
+      <div>
+        <h2>Filtering Data</h2>
+        <div class="subtopics">WHERE · Comparison Operators · AND/OR/NOT · IN · BETWEEN · LIKE · IS NULL</div>
+      </div>
+    </div>
+    <div class="topic-body">
+
+      <div class="section-label">🧒 Explain Like I'm 5</div>
+      <div class="explain-box">
+        <div class="lang-tag">🇬🇧 English</div>
+        You have 100 toy cards. You only want the <em>red ones</em>. You use a filter! In SQL, <code>WHERE</code> is that filter. It says: "Only show me rows that match this rule." Like: only show patients from Chennai, or only doctors who earn more than $5000.
+      </div>
+      <div class="explain-box tamil">
+        <div class="lang-tag">🇮🇳 தமிழ்</div>
+        உன்னிடம் 100 அட்டைகள் இருக்கு. நீ சிவப்பு நிற அட்டைகள் மட்டும் வேணும்னு சொல்றே. அதுக்கு ஒரு வடிகட்டி (filter) பயன்படுத்துவோம். SQL-ல அந்த வடிகட்டி தான் <code>WHERE</code>. "இந்த நிபந்தனைக்கு பொருந்தும் rows மட்டும் காட்டு" என்று சொல்ல பயன்படுகிறது. உதாரணம்: Chennai-லிருந்து வரும் நோயாளிகள் மட்டும், அல்லது 5000-க்கு மேல் சம்பளம் பெறும் டாக்டர்கள் மட்டும்.
+      </div>
+
+      <div class="section-label">📝 Sample Query &amp; Output</div>
+      <pre><code><span class="cm">-- WHERE with comparison</span>
+<span class="kw">SELECT</span> name, age <span class="kw">FROM</span> patients <span class="kw">WHERE</span> age &gt; <span class="num">40</span>;
+
+<span class="cm">-- AND / OR</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> patients <span class="kw">WHERE</span> city = <span class="str">'Chennai'</span> <span class="kw">AND</span> gender = <span class="str">'Male'</span>;
+
+<span class="cm">-- IN operator</span>
+<span class="kw">SELECT</span> name <span class="kw">FROM</span> patients <span class="kw">WHERE</span> city <span class="kw">IN</span> (<span class="str">'Chennai'</span>, <span class="str">'Mumbai'</span>);
+
+<span class="cm">-- BETWEEN</span>
+<span class="kw">SELECT</span> name, age <span class="kw">FROM</span> patients <span class="kw">WHERE</span> age <span class="kw">BETWEEN</span> <span class="num">30</span> <span class="kw">AND</span> <span class="num">50</span>;
+
+<span class="cm">-- LIKE: patients whose name starts with 'A'</span>
+<span class="kw">SELECT</span> name <span class="kw">FROM</span> patients <span class="kw">WHERE</span> name <span class="kw">LIKE</span> <span class="str">'A%'</span>;
+
+<span class="cm">-- IS NULL: appointments with no fee</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> appointments <span class="kw">WHERE</span> fee <span class="kw">IS NULL</span>;</code></pre>
+      <div class="output-label">▶ Output: WHERE age &gt; 40</div>
+      <table class="result">
+        <tbody><tr><th>name</th><th>age</th></tr>
+        <tr><td>Ramesh Babu</td><td>52</td></tr>
+        <tr><td>Kavitha Nair</td><td>45</td></tr>
+      </tbody></table>
+
+      <div class="section-label">❓ Practice Questions</div>
+      <div class="questions">
+
+        <div class="question-card">
+          <span class="q-num">Q1</span>
+          <div class="q-text">Find all <strong>female patients</strong> from <strong>Mumbai</strong>.</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT</span> * <span class="kw">FROM</span> patients
+<span class="kw">WHERE</span> gender = <span class="str">'Female'</span> <span class="kw">AND</span> city = <span class="str">'Mumbai'</span>;</code></pre>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <span class="q-num">Q2</span>
+          <div class="q-text">Find all appointments with <strong>status</strong> of either <em>'Completed'</em> or <em>'Cancelled'</em> using the <code>IN</code> operator.</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT</span> * <span class="kw">FROM</span> appointments
+<span class="kw">WHERE</span> status <span class="kw">IN</span> (<span class="str">'Completed'</span>, <span class="str">'Cancelled'</span>);</code></pre>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <span class="q-num">Q3</span>
+          <div class="q-text">Find doctors with <strong>experience between 5 and 15 years</strong> in the <strong>Cardiology</strong> department.</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT</span> * <span class="kw">FROM</span> doctors
+<span class="kw">WHERE</span> experience_yrs <span class="kw">BETWEEN</span> <span class="num">5</span> <span class="kw">AND</span> <span class="num">15</span>
+<span class="kw">AND</span> department = <span class="str">'Cardiology'</span>;</code></pre>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <span class="q-num">Q4</span>
+          <div class="q-text">Find all patients whose name <strong>contains the word "Kumar"</strong>.</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT</span> * <span class="kw">FROM</span> patients
+<span class="kw">WHERE</span> name <span class="kw">LIKE</span> <span class="str">'%Kumar%'</span>;</code></pre>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="project-box">
+        <div class="proj-title">🏥 Hospital Project Task <span>Topic 2</span></div>
+        <p><strong>Task:</strong> Filter hospital data to find specific patient groups.</p>
+        <ul>
+          <li>Find all patients aged <strong>above 60</strong> (senior patients needing extra care).</li>
+          <li>Find all <strong>Pending</strong> or <strong>Scheduled</strong> appointments.</li>
+          <li>Find doctors whose <strong>salary is above 80,000</strong>.</li>
+          <li>Find patients whose <strong>blood group is O+ or O-</strong> (universal donors).</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- TOPIC 3: SORTING & LIMITING -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div class="topic" id="t3">
+    <div class="topic-header">
+      <div class="topic-num">3</div>
+      <div>
+        <h2>Sorting &amp; Limiting</h2>
+        <div class="subtopics">ORDER BY · ASC / DESC · LIMIT / TOP</div>
+      </div>
+    </div>
+    <div class="topic-body">
+
+      <div class="section-label">🧒 Explain Like I'm 5</div>
+      <div class="explain-box">
+        <div class="lang-tag">🇬🇧 English</div>
+        Imagine you have a list of scores. You want to arrange them from highest to lowest — that's <code>ORDER BY DESC</code>. And if you only want to see the <em>top 3</em>, you say <code>LIMIT 3</code>. Easy!
+      </div>
+      <div class="explain-box tamil">
+        <div class="lang-tag">🇮🇳 தமிழ்</div>
+        உன்னிடம் மதிப்பெண்கள் பட்டியல் இருக்கு. அதை அதிகமானதிலிருந்து குறைவானது வரை வரிசைப்படுத்தணும் — அதுதான் <code>ORDER BY DESC</code>. முதல் 3 பேர் மட்டும் வேணும்னா <code>LIMIT 3</code> சொல்லலாம். மிகவும் எளிது!
+      </div>
+
+      <div class="section-label">📝 Sample Query &amp; Output</div>
+      <pre><code><span class="cm">-- Sort patients by age (oldest first)</span>
+<span class="kw">SELECT</span> name, age <span class="kw">FROM</span> patients <span class="kw">ORDER BY</span> age <span class="kw">DESC</span>;
+
+<span class="cm">-- Top 3 highest-paid doctors</span>
+<span class="kw">SELECT</span> name, salary <span class="kw">FROM</span> doctors <span class="kw">ORDER BY</span> salary <span class="kw">DESC</span> <span class="kw">LIMIT</span> <span class="num">3</span>;
+
+<span class="cm">-- Sort appointments by date (most recent first)</span>
+<span class="kw">SELECT</span> appt_id, appt_date, status <span class="kw">FROM</span> appointments
+<span class="kw">ORDER BY</span> appt_date <span class="kw">DESC</span>;</code></pre>
+      <div class="output-label">▶ Output: Top 3 highest-paid doctors</div>
+      <table class="result">
+        <tbody><tr><th>name</th><th>salary</th></tr>
+        <tr><td>Dr. Anand Rao</td><td>120000</td></tr>
+        <tr><td>Dr. Meena Pillai</td><td>105000</td></tr>
+        <tr><td>Dr. Karthik Iyer</td><td>98000</td></tr>
+      </tbody></table>
+
+      <div class="section-label">❓ Practice Questions</div>
+      <div class="questions">
+
+        <div class="question-card">
+          <span class="q-num">Q1</span>
+          <div class="q-text">List all patients sorted by <strong>age from youngest to oldest</strong>.</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT</span> name, age <span class="kw">FROM</span> patients <span class="kw">ORDER BY</span> age <span class="kw">ASC</span>;</code></pre>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <span class="q-num">Q2</span>
+          <div class="q-text">Find the <strong>5 most recent appointments</strong>.</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT</span> * <span class="kw">FROM</span> appointments
+<span class="kw">ORDER BY</span> appt_date <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="num">5</span>;</code></pre>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <span class="q-num">Q3</span>
+          <div class="q-text">List doctors sorted by <strong>experience (most experienced first)</strong>, and show only the <strong>top 5</strong>.</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT</span> name, department, experience_yrs
+<span class="kw">FROM</span> doctors
+<span class="kw">ORDER BY</span> experience_yrs <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="num">5</span>;</code></pre>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="project-box">
+        <div class="proj-title">🏥 Hospital Project Task <span>Topic 3</span></div>
+        <p><strong>Task:</strong> Build a "Hospital Leaderboard" using sorting.</p>
+        <ul>
+          <li>Find the <strong>top 3 highest-fee appointments</strong>.</li>
+          <li>List patients sorted <strong>alphabetically by name</strong>.</li>
+          <li>Find the <strong>most experienced doctor</strong> in each department (hint: sort, use LIMIT later with GROUP BY).</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- TOPIC 4: AGGREGATE FUNCTIONS -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div class="topic" id="t4">
+    <div class="topic-header">
+      <div class="topic-num">4</div>
+      <div>
+        <h2>Aggregate Functions</h2>
+        <div class="subtopics">COUNT · SUM · AVG · MIN · MAX · ROUND</div>
+      </div>
+    </div>
+    <div class="topic-body">
+
+      <div class="section-label">🧒 Explain Like I'm 5</div>
+      <div class="explain-box">
+        <div class="lang-tag">🇬🇧 English</div>
+        You have 10 piggy banks with different amounts of money. <code>SUM</code> adds them all up. <code>AVG</code> finds the average. <code>COUNT</code> counts how many banks there are. <code>MAX</code> finds the richest bank. These are your math helpers in SQL!
+      </div>
+      <div class="explain-box tamil">
+        <div class="lang-tag">🇮🇳 தமிழ்</div>
+        உன்னிடம் 10 குட்டி பணப்பெட்டிகள் இருக்கு, ஒவ்வொன்றிலும் வெவ்வேறு தொகை இருக்கு. <code>SUM</code> எல்லாவற்றையும் கூட்டும். <code>AVG</code> சராசரி காண்பிக்கும். <code>COUNT</code> எத்தனை பெட்டிகள் என்று எண்ணும். <code>MAX</code> அதிகமான தொகையை காண்பிக்கும். இவை SQL-ல உனது கணித உதவியாளர்கள்!
+      </div>
+
+      <div class="section-label">📝 Sample Query &amp; Output</div>
+      <pre><code><span class="cm">-- Count total patients</span>
+<span class="kw">SELECT COUNT</span>(*) <span class="kw">AS</span> total_patients <span class="kw">FROM</span> patients;
+
+<span class="cm">-- Total revenue from appointments</span>
+<span class="kw">SELECT SUM</span>(fee) <span class="kw">AS</span> total_revenue <span class="kw">FROM</span> appointments;
+
+<span class="cm">-- Average doctor salary</span>
+<span class="kw">SELECT ROUND</span>(<span class="fn">AVG</span>(salary), <span class="num">2</span>) <span class="kw">AS</span> avg_salary <span class="kw">FROM</span> doctors;
+
+<span class="cm">-- Min and Max appointment fee</span>
+<span class="kw">SELECT MIN</span>(fee) <span class="kw">AS</span> min_fee, <span class="fn">MAX</span>(fee) <span class="kw">AS</span> max_fee <span class="kw">FROM</span> appointments;</code></pre>
+      <div class="output-label">▶ Output</div>
+      <table class="result">
+        <tbody><tr><th>total_patients</th></tr><tr><td>50</td></tr>
+      </tbody></table>
+      <table class="result">
+        <tbody><tr><th>total_revenue</th><th>avg_salary</th><th>min_fee</th><th>max_fee</th></tr>
+        <tr><td>425000.00</td><td>87500.00</td><td>500.00</td><td>5000.00</td></tr>
+      </tbody></table>
+
+      <div class="section-label">❓ Practice Questions</div>
+      <div class="questions">
+
+        <div class="question-card">
+          <span class="q-num">Q1</span>
+          <div class="q-text">How many <strong>completed appointments</strong> are there in total?</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT COUNT</span>(*) <span class="kw">AS</span> completed_count
+<span class="kw">FROM</span> appointments
+<span class="kw">WHERE</span> status = <span class="str">'Completed'</span>;</code></pre>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <span class="q-num">Q2</span>
+          <div class="q-text">What is the <strong>average age</strong> of all patients? Round to 1 decimal place.</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT ROUND</span>(<span class="fn">AVG</span>(age), <span class="num">1</span>) <span class="kw">AS</span> avg_patient_age <span class="kw">FROM</span> patients;</code></pre>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <span class="q-num">Q3</span>
+          <div class="q-text">What is the <strong>maximum and minimum salary</strong> among all doctors?</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT MAX</span>(salary) <span class="kw">AS</span> highest_salary,
+       <span class="fn">MIN</span>(salary) <span class="kw">AS</span> lowest_salary
+<span class="kw">FROM</span> doctors;</code></pre>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="project-box">
+        <div class="proj-title">🏥 Hospital Project Task <span>Topic 4</span></div>
+        <p><strong>Task:</strong> Generate a hospital summary report using aggregate functions.</p>
+        <ul>
+          <li>Total number of patients registered.</li>
+          <li>Total revenue collected from all appointments.</li>
+          <li>Average fee per appointment.</li>
+          <li>Highest and lowest doctor salaries.</li>
+          <li>Count of appointments in <em>each status</em> (combine with next topic!).</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- TOPIC 5: GROUPING DATA -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div class="topic" id="t5">
+    <div class="topic-header">
+      <div class="topic-num">5</div>
+      <div>
+        <h2>Grouping Data</h2>
+        <div class="subtopics">GROUP BY · HAVING · GROUP BY Multiple Columns · Aggregate + GROUP BY</div>
+      </div>
+    </div>
+    <div class="topic-body">
+
+      <div class="section-label">🧒 Explain Like I'm 5</div>
+      <div class="explain-box">
+        <div class="lang-tag">🇬🇧 English</div>
+        Imagine sorting your toys into groups: all cars together, all dolls together, all blocks together. Then you count how many toys are in each group. That's <code>GROUP BY</code>! And <code>HAVING</code> is like saying "only show me groups that have more than 5 toys."
+      </div>
+      <div class="explain-box tamil">
+        <div class="lang-tag">🇮🇳 தமிழ்</div>
+        உன் பொம்மைகளை பிரிக்கிறாய்: கார்கள் ஒரு குழு, பொம்மைகள் ஒரு குழு, தொகுதிகள் ஒரு குழு. பிறகு ஒவ்வொரு குழுவிலும் எத்தனை பொம்மைகள் என்று எண்ணுகிறாய். அதுதான் <code>GROUP BY</code>! <code>HAVING</code> என்பது "5-க்கும் மேல் பொம்மைகள் உள்ள குழுக்களை மட்டும் காட்டு" என்று சொல்வது போன்றது.
+      </div>
+
+      <div class="section-label">📝 Sample Query &amp; Output</div>
+      <pre><code><span class="cm">-- Count patients per city</span>
+<span class="kw">SELECT</span> city, <span class="fn">COUNT</span>(*) <span class="kw">AS</span> patient_count
+<span class="kw">FROM</span> patients
+<span class="kw">GROUP BY</span> city;
+
+<span class="cm">-- Total fees collected per doctor</span>
+<span class="kw">SELECT</span> doctor_id, <span class="fn">SUM</span>(fee) <span class="kw">AS</span> total_fees
+<span class="kw">FROM</span> appointments
+<span class="kw">GROUP BY</span> doctor_id;
+
+<span class="cm">-- HAVING: only cities with more than 5 patients</span>
+<span class="kw">SELECT</span> city, <span class="fn">COUNT</span>(*) <span class="kw">AS</span> patient_count
+<span class="kw">FROM</span> patients
+<span class="kw">GROUP BY</span> city
+<span class="kw">HAVING COUNT</span>(*) &gt; <span class="num">5</span>;</code></pre>
+      <div class="output-label">▶ Output: Patients per city</div>
+      <table class="result">
+        <tbody><tr><th>city</th><th>patient_count</th></tr>
+        <tr><td>Chennai</td><td>18</td></tr>
+        <tr><td>Mumbai</td><td>14</td></tr>
+        <tr><td>Bangalore</td><td>10</td></tr>
+        <tr><td>Delhi</td><td>8</td></tr>
+      </tbody></table>
+
+      <div class="section-label">❓ Practice Questions</div>
+      <div class="questions">
+
+        <div class="question-card">
+          <span class="q-num">Q1</span>
+          <div class="q-text">Count the number of <strong>appointments per status</strong> (Completed, Pending, Cancelled).</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT</span> status, <span class="fn">COUNT</span>(*) <span class="kw">AS</span> count
+<span class="kw">FROM</span> appointments
+<span class="kw">GROUP BY</span> status;</code></pre>
+            <div class="output-label">▶ Output</div>
+            <table class="result">
+              <tbody><tr><th>status</th><th>count</th></tr>
+              <tr><td>Completed</td><td>42</td></tr>
+              <tr><td>Pending</td><td>15</td></tr>
+              <tr><td>Cancelled</td><td>8</td></tr>
+            </tbody></table>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <span class="q-num">Q2</span>
+          <div class="q-text">Find the <strong>average salary per department</strong>.</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT</span> department, <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary), <span class="num">2</span>) <span class="kw">AS</span> avg_salary
+<span class="kw">FROM</span> doctors
+<span class="kw">GROUP BY</span> department;</code></pre>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <span class="q-num">Q3</span>
+          <div class="q-text">Find <strong>departments where the total salary bill exceeds 300,000</strong> using HAVING.</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT</span> department, <span class="fn">SUM</span>(salary) <span class="kw">AS</span> total_salary
+<span class="kw">FROM</span> doctors
+<span class="kw">GROUP BY</span> department
+<span class="kw">HAVING SUM</span>(salary) &gt; <span class="num">300000</span>;</code></pre>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="project-box">
+        <div class="proj-title">🏥 Hospital Project Task <span>Topic 5</span></div>
+        <p><strong>Task:</strong> Build the hospital's departmental summary report.</p>
+        <ul>
+          <li>Number of doctors per department.</li>
+          <li>Total appointment fees collected per doctor.</li>
+          <li>Average patient age by gender.</li>
+          <li>Find departments where average doctor salary exceeds 90,000.</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- TOPIC 6: JOINS -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div class="topic" id="t6">
+    <div class="topic-header">
+      <div class="topic-num">6</div>
+      <div>
+        <h2>Joins</h2>
+        <div class="subtopics">INNER JOIN · LEFT JOIN · RIGHT JOIN · FULL JOIN · CROSS JOIN · SELF JOIN</div>
+      </div>
+    </div>
+    <div class="topic-body">
+
+      <div class="section-label">🧒 Explain Like I'm 5</div>
+      <div class="explain-box">
+        <div class="lang-tag">🇬🇧 English</div>
+        You have two lists: one with student names, another with their exam scores. To see "Arjun's score", you need to <em>join</em> the two lists by matching the student name. <code>INNER JOIN</code> shows only students who appear in BOTH lists. <code>LEFT JOIN</code> shows everyone from the first list, even if they have no score.
+      </div>
+      <div class="explain-box tamil">
+        <div class="lang-tag">🇮🇳 தமிழ்</div>
+        உன்னிடம் இரண்டு பட்டியல்கள் இருக்கு: ஒன்று மாணவர் பெயர்கள், மற்றொன்று அவர்களின் மதிப்பெண்கள். "அர்ஜுன்னின் மதிப்பெண்" பார்க்க, இரண்டு பட்டியல்களையும் இணைக்க வேண்டும். <code>INNER JOIN</code> = இரண்டு பட்டியலிலும் இருப்பவர்களை மட்டும் காட்டும். <code>LEFT JOIN</code> = முதல் பட்டியலில் உள்ள எல்லோரையும் காட்டும், மதிப்பெண் இல்லாதவர்களையும் சேர்த்து.
+      </div>
+
+      <div class="section-label">📝 Sample Query &amp; Output</div>
+      <pre><code><span class="cm">-- INNER JOIN: appointments with patient names</span>
+<span class="kw">SELECT</span> a.appt_id, p.name <span class="kw">AS</span> patient, a.appt_date, a.fee
+<span class="kw">FROM</span> appointments a
+<span class="kw">INNER JOIN</span> patients p <span class="kw">ON</span> a.patient_id = p.patient_id;
+
+<span class="cm">-- LEFT JOIN: all patients, even without appointments</span>
+<span class="kw">SELECT</span> p.name, a.appt_date
+<span class="kw">FROM</span> patients p
+<span class="kw">LEFT JOIN</span> appointments a <span class="kw">ON</span> p.patient_id = a.patient_id;
+
+<span class="cm">-- 3-table JOIN: appointment with patient AND doctor names</span>
+<span class="kw">SELECT</span> p.name <span class="kw">AS</span> patient, d.name <span class="kw">AS</span> doctor,
+       d.department, a.appt_date, a.fee
+<span class="kw">FROM</span> appointments a
+<span class="kw">INNER JOIN</span> patients p <span class="kw">ON</span> a.patient_id = p.patient_id
+<span class="kw">INNER JOIN</span> doctors d <span class="kw">ON</span> a.doctor_id = d.doctor_id;</code></pre>
+      <div class="output-label">▶ Output: 3-table JOIN (sample rows)</div>
+      <table class="result">
+        <tbody><tr><th>patient</th><th>doctor</th><th>department</th><th>appt_date</th><th>fee</th></tr>
+        <tr><td>Arjun Kumar</td><td>Dr. Anand Rao</td><td>Cardiology</td><td>2024-01-15</td><td>1500</td></tr>
+        <tr><td>Priya Sharma</td><td>Dr. Meena Pillai</td><td>Neurology</td><td>2024-01-17</td><td>2000</td></tr>
+      </tbody></table>
+
+      <div class="section-label">❓ Practice Questions</div>
+      <div class="questions">
+
+        <div class="question-card">
+          <span class="q-num">Q1</span>
+          <div class="q-text">List all appointments showing <strong>patient name</strong>, <strong>doctor name</strong>, and <strong>fee</strong>.</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT</span> p.name <span class="kw">AS</span> patient_name,
+       d.name <span class="kw">AS</span> doctor_name,
+       a.fee
+<span class="kw">FROM</span> appointments a
+<span class="kw">INNER JOIN</span> patients p <span class="kw">ON</span> a.patient_id = p.patient_id
+<span class="kw">INNER JOIN</span> doctors d <span class="kw">ON</span> a.doctor_id = d.doctor_id;</code></pre>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <span class="q-num">Q2</span>
+          <div class="q-text">Find all <strong>patients who have NEVER had an appointment</strong> (LEFT JOIN + IS NULL trick).</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT</span> p.name, p.city
+<span class="kw">FROM</span> patients p
+<span class="kw">LEFT JOIN</span> appointments a <span class="kw">ON</span> p.patient_id = a.patient_id
+<span class="kw">WHERE</span> a.appt_id <span class="kw">IS NULL</span>;</code></pre>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <span class="q-num">Q3</span>
+          <div class="q-text">Show each doctor's name alongside their <strong>department location</strong> from the departments table.</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT</span> d.name <span class="kw">AS</span> doctor_name, d.department, dept.location
+<span class="kw">FROM</span> doctors d
+<span class="kw">INNER JOIN</span> departments dept <span class="kw">ON</span> d.department = dept.dept_name;</code></pre>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="project-box">
+        <div class="proj-title">🏥 Hospital Project Task <span>Topic 6</span></div>
+        <p><strong>Task:</strong> Create a complete appointment report combining all tables.</p>
+        <ul>
+          <li>Full appointment list: patient name, doctor name, department, date, fee, status.</li>
+          <li>Find patients who have visited the <strong>Cardiology</strong> department.</li>
+          <li>Find all doctors who have <strong>zero appointments</strong> (LEFT JOIN + IS NULL).</li>
+          <li>Total fees collected <strong>per department</strong> (JOIN + GROUP BY).</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- TOPIC 7: SUBQUERIES -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div class="topic" id="t7">
+    <div class="topic-header">
+      <div class="topic-num">7</div>
+      <div>
+        <h2>Subqueries</h2>
+        <div class="subtopics">Subquery in WHERE · Subquery in SELECT · Subquery in FROM · Correlated · EXISTS</div>
+      </div>
+    </div>
+    <div class="topic-body">
+
+      <div class="section-label">🧒 Explain Like I'm 5</div>
+      <div class="explain-box">
+        <div class="lang-tag">🇬🇧 English</div>
+        A subquery is a question inside a question! Like asking: "Show me students who scored higher than <em>(the average score of the whole class)</em>." The part in brackets is the inner question — it runs first, then the outer question uses that answer.
+      </div>
+      <div class="explain-box tamil">
+        <div class="lang-tag">🇮🇳 தமிழ்</div>
+        ஒரு கேள்விக்குள் இன்னொரு கேள்வி! உதாரணம்: "வகுப்பின் சராசரி மதிப்பெண்ணை விட அதிகம் பெற்ற மாணவர்களை காட்டு." அடைப்புக்குறிக்குள் உள்ளது உள் கேள்வி — அது முதலில் இயங்கும், பிறகு வெளி கேள்வி அந்த விடையை பயன்படுத்தும்.
+      </div>
+
+      <div class="section-label">📝 Sample Query &amp; Output</div>
+      <pre><code><span class="cm">-- Subquery in WHERE: doctors earning above average salary</span>
+<span class="kw">SELECT</span> name, salary <span class="kw">FROM</span> doctors
+<span class="kw">WHERE</span> salary &gt; (<span class="kw">SELECT AVG</span>(salary) <span class="kw">FROM</span> doctors);
+
+<span class="cm">-- Subquery in SELECT: show each patient + total their appointments</span>
+<span class="kw">SELECT</span> name,
+  (<span class="kw">SELECT COUNT</span>(*) <span class="kw">FROM</span> appointments a
+   <span class="kw">WHERE</span> a.patient_id = p.patient_id) <span class="kw">AS</span> total_appointments
+<span class="kw">FROM</span> patients p;
+
+<span class="cm">-- EXISTS: patients who have at least one appointment</span>
+<span class="kw">SELECT</span> name <span class="kw">FROM</span> patients p
+<span class="kw">WHERE EXISTS</span> (
+  <span class="kw">SELECT</span> <span class="num">1</span> <span class="kw">FROM</span> appointments a
+  <span class="kw">WHERE</span> a.patient_id = p.patient_id
+);</code></pre>
+
+      <div class="section-label">❓ Practice Questions</div>
+      <div class="questions">
+
+        <div class="question-card">
+          <span class="q-num">Q1</span>
+          <div class="q-text">Find all appointments where the fee is <strong>above the average fee</strong>.</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT</span> * <span class="kw">FROM</span> appointments
+<span class="kw">WHERE</span> fee &gt; (<span class="kw">SELECT AVG</span>(fee) <span class="kw">FROM</span> appointments);</code></pre>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <span class="q-num">Q2</span>
+          <div class="q-text">Find the <strong>patient who paid the highest single appointment fee</strong>.</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT</span> p.name, a.fee
+<span class="kw">FROM</span> patients p
+<span class="kw">INNER JOIN</span> appointments a <span class="kw">ON</span> p.patient_id = a.patient_id
+<span class="kw">WHERE</span> a.fee = (<span class="kw">SELECT MAX</span>(fee) <span class="kw">FROM</span> appointments);</code></pre>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <span class="q-num">Q3</span>
+          <div class="q-text">Find patients who have <strong>NOT had any appointments</strong> using <code>NOT EXISTS</code>.</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT</span> name <span class="kw">FROM</span> patients p
+<span class="kw">WHERE NOT EXISTS</span> (
+  <span class="kw">SELECT</span> <span class="num">1</span> <span class="kw">FROM</span> appointments a
+  <span class="kw">WHERE</span> a.patient_id = p.patient_id
+);</code></pre>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="project-box">
+        <div class="proj-title">🏥 Hospital Project Task <span>Topic 7</span></div>
+        <p><strong>Task:</strong> Advanced hospital analysis using subqueries.</p>
+        <ul>
+          <li>Find the doctor who handled the <strong>most expensive appointment</strong>.</li>
+          <li>List patients who visited doctors with <strong>above-average salaries</strong>.</li>
+          <li>Find departments where all doctors earn <strong>above 70,000</strong>.</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- TOPIC 8: SET OPERATORS -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div class="topic" id="t8">
+    <div class="topic-header">
+      <div class="topic-num">8</div>
+      <div>
+        <h2>Set Operators</h2>
+        <div class="subtopics">UNION · UNION ALL · INTERSECT · EXCEPT / MINUS</div>
+      </div>
+    </div>
+    <div class="topic-body">
+
+      <div class="section-label">🧒 Explain Like I'm 5</div>
+      <div class="explain-box">
+        <div class="lang-tag">🇬🇧 English</div>
+        You have two friend groups. <code>UNION</code> combines both groups (no duplicates). <code>UNION ALL</code> combines them but keeps duplicates. <code>INTERSECT</code> shows only friends in BOTH groups. <code>EXCEPT</code> shows friends only in group 1 but NOT in group 2.
+      </div>
+      <div class="explain-box tamil">
+        <div class="lang-tag">🇮🇳 தமிழ்</div>
+        உன்னிடம் இரண்டு நண்பர் குழுக்கள் இருக்கு. <code>UNION</code> = இரண்டையும் இணைக்கும் (duplicate இல்லாமல்). <code>UNION ALL</code> = இரண்டையும் இணைக்கும் (duplicate உடன்). <code>INTERSECT</code> = இரண்டு குழுவிலும் இருக்கும் நண்பர்கள். <code>EXCEPT</code> = முதல் குழுவில் மட்டும் இருக்கும் நண்பர்கள்.
+      </div>
+
+      <div class="section-label">📝 Sample Query &amp; Output</div>
+      <pre><code><span class="cm">-- UNION: all cities from patients + all locations from departments</span>
+<span class="kw">SELECT</span> city <span class="kw">AS</span> location <span class="kw">FROM</span> patients
+<span class="kw">UNION</span>
+<span class="kw">SELECT</span> location <span class="kw">FROM</span> departments;
+
+<span class="cm">-- INTERSECT: patients who are also from department locations</span>
+<span class="kw">SELECT</span> city <span class="kw">FROM</span> patients
+<span class="kw">INTERSECT</span>
+<span class="kw">SELECT</span> location <span class="kw">FROM</span> departments;
+
+<span class="cm">-- EXCEPT: patient cities NOT covered by any department</span>
+<span class="kw">SELECT</span> city <span class="kw">FROM</span> patients
+<span class="kw">EXCEPT</span>
+<span class="kw">SELECT</span> location <span class="kw">FROM</span> departments;</code></pre>
+
+      <div class="section-label">❓ Practice Questions</div>
+      <div class="questions">
+
+        <div class="question-card">
+          <span class="q-num">Q1</span>
+          <div class="q-text">Combine a list of <strong>all patient names</strong> and <strong>all doctor names</strong> into one list using UNION.</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT</span> name, <span class="str">'Patient'</span> <span class="kw">AS</span> role <span class="kw">FROM</span> patients
+<span class="kw">UNION</span>
+<span class="kw">SELECT</span> name, <span class="str">'Doctor'</span> <span class="kw">AS</span> role <span class="kw">FROM</span> doctors;</code></pre>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <span class="q-num">Q2</span>
+          <div class="q-text">Use <code>UNION ALL</code> to get all appointment fees from <strong>2023 and 2024</strong> combined (including duplicates).</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT</span> fee, appt_date <span class="kw">FROM</span> appointments <span class="kw">WHERE</span> <span class="fn">YEAR</span>(appt_date) = <span class="num">2023</span>
+<span class="kw">UNION ALL</span>
+<span class="kw">SELECT</span> fee, appt_date <span class="kw">FROM</span> appointments <span class="kw">WHERE</span> <span class="fn">YEAR</span>(appt_date) = <span class="num">2024</span>;</code></pre>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="project-box">
+        <div class="proj-title">🏥 Hospital Project Task <span>Topic 8</span></div>
+        <p><strong>Task:</strong> Use set operators for hospital reporting.</p>
+        <ul>
+          <li>Create a <strong>master people list</strong> with all patients and doctors (UNION).</li>
+          <li>Find cities that have <strong>both patients and department offices</strong> (INTERSECT).</li>
+          <li>Find patient cities with <strong>no department coverage</strong> (EXCEPT — gap analysis!).</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- TOPIC 9: WINDOW FUNCTIONS -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div class="topic" id="t9">
+    <div class="topic-header">
+      <div class="topic-num">9</div>
+      <div>
+        <h2>Window Functions</h2>
+        <div class="subtopics">OVER() · ROW_NUMBER() · RANK() · DENSE_RANK() · LAG() · LEAD() · PARTITION BY</div>
+      </div>
+    </div>
+    <div class="topic-body">
+
+      <div class="section-label">🧒 Explain Like I'm 5</div>
+      <div class="explain-box">
+        <div class="lang-tag">🇬🇧 English</div>
+        Imagine you have a class, and you want to rank each student's score — but you want to <em>keep all the rows</em> (unlike GROUP BY which squishes them). Window functions do calculations <em>across rows</em> without collapsing them. <code>RANK()</code> gives each row a rank number. <code>LAG()</code> lets you peek at the previous row!
+      </div>
+      <div class="explain-box tamil">
+        <div class="lang-tag">🇮🇳 தமிழ்</div>
+        வகுப்பில் உள்ள மாணவர்களுக்கு rank கொடுக்கணும், ஆனால் எல்லா rows-ஐயும் வைத்திருக்கணும் (GROUP BY போல அழிக்கக்கூடாது). Window functions எல்லா rows-ஐயும் வைத்திருந்தே கணக்கு போடும். <code>RANK()</code> = ஒவ்வொரு row-க்கும் rank கொடுக்கும். <code>LAG()</code> = முந்தைய row-ஐ பார்க்க உதவும்!
+      </div>
+
+      <div class="section-label">📝 Sample Query &amp; Output</div>
+      <pre><code><span class="cm">-- ROW_NUMBER: assign a unique row number</span>
+<span class="kw">SELECT</span> name, salary,
+  <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> salary <span class="kw">DESC</span>) <span class="kw">AS</span> row_num
+<span class="kw">FROM</span> doctors;
+
+<span class="cm">-- RANK within each department</span>
+<span class="kw">SELECT</span> name, department, salary,
+  <span class="fn">RANK</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> department <span class="kw">ORDER BY</span> salary <span class="kw">DESC</span>) <span class="kw">AS</span> dept_rank
+<span class="kw">FROM</span> doctors;
+
+<span class="cm">-- LAG: compare each appointment fee with the previous one</span>
+<span class="kw">SELECT</span> appt_id, appt_date, fee,
+  <span class="fn">LAG</span>(fee) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> appt_date) <span class="kw">AS</span> prev_fee
+<span class="kw">FROM</span> appointments;</code></pre>
+      <div class="output-label">▶ Output: RANK within department</div>
+      <table class="result">
+        <tbody><tr><th>name</th><th>department</th><th>salary</th><th>dept_rank</th></tr>
+        <tr><td>Dr. Anand Rao</td><td>Cardiology</td><td>120000</td><td>1</td></tr>
+        <tr><td>Dr. Preethi S</td><td>Cardiology</td><td>95000</td><td>2</td></tr>
+        <tr><td>Dr. Meena Pillai</td><td>Neurology</td><td>105000</td><td>1</td></tr>
+        <tr><td>Dr. Karthik Iyer</td><td>Neurology</td><td>98000</td><td>2</td></tr>
+      </tbody></table>
+
+      <div class="section-label">❓ Practice Questions</div>
+      <div class="questions">
+
+        <div class="question-card">
+          <span class="q-num">Q1</span>
+          <div class="q-text">Rank all doctors by <strong>salary (highest first)</strong> using <code>DENSE_RANK()</code>.</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT</span> name, department, salary,
+  <span class="fn">DENSE_RANK</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> salary <span class="kw">DESC</span>) <span class="kw">AS</span> salary_rank
+<span class="kw">FROM</span> doctors;</code></pre>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <span class="q-num">Q2</span>
+          <div class="q-text">For each appointment, show the <strong>fee difference from the previous appointment</strong> using <code>LAG()</code>.</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT</span> appt_id, appt_date, fee,
+  <span class="fn">LAG</span>(fee, <span class="num">1</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> appt_date) <span class="kw">AS</span> prev_fee,
+  fee - <span class="fn">LAG</span>(fee, <span class="num">1</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> appt_date) <span class="kw">AS</span> fee_diff
+<span class="kw">FROM</span> appointments;</code></pre>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <span class="q-num">Q3</span>
+          <div class="q-text">Find the <strong>top-ranked doctor in each department</strong> by salary (PARTITION BY + RANK).</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT</span> * <span class="kw">FROM</span> (
+  <span class="kw">SELECT</span> name, department, salary,
+    <span class="fn">RANK</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> department <span class="kw">ORDER BY</span> salary <span class="kw">DESC</span>) <span class="kw">AS</span> rnk
+  <span class="kw">FROM</span> doctors
+) ranked
+<span class="kw">WHERE</span> rnk = <span class="num">1</span>;</code></pre>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="project-box">
+        <div class="proj-title">🏥 Hospital Project Task <span>Topic 9</span></div>
+        <p><strong>Task:</strong> Build a hospital performance ranking dashboard.</p>
+        <ul>
+          <li>Rank doctors by total fees they generated.</li>
+          <li>Assign ROW_NUMBER to patients ordered by registration date.</li>
+          <li>Use <code>LEAD()</code> to show the <strong>next appointment date</strong> for each patient.</li>
+          <li>Show running total of appointment fees using SUM() OVER().</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- TOPIC 10: ADVANCED TOPICS -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div class="topic" id="t10">
+    <div class="topic-header">
+      <div class="topic-num" style="background:var(--accent2)">10</div>
+      <div>
+        <h2>Advanced Topics</h2>
+        <div class="subtopics">CASE · CTE · Temporary Tables · Views · Indexes · Date/Time · String Functions · Conditional Aggregation</div>
+      </div>
+    </div>
+    <div class="topic-body">
+
+      <div class="section-label">🧒 Explain Like I'm 5</div>
+      <div class="explain-box">
+        <div class="lang-tag">🇬🇧 English</div>
+        <strong>CASE</strong> is like an if-else: "If the score is above 90, say 'Excellent'; if above 70, say 'Good'; else say 'Try harder'." <strong>CTE</strong> is like writing a mini-table at the top of your query so you can reuse it. <strong>Views</strong> are like saved queries you can treat like a table anytime.
+      </div>
+      <div class="explain-box tamil">
+        <div class="lang-tag">🇮🇳 தமிழ்</div>
+        <strong>CASE</strong> என்பது if-else போல: "மதிப்பெண் 90-க்கு மேல் என்றால் 'சிறந்தது'; 70-க்கு மேல் என்றால் 'நல்லது'; இல்லையென்றால் 'மேலும் முயற்சி செய்'." <strong>CTE</strong> என்பது query-யின் மேலே ஒரு mini-table எழுதுவது போல — மீண்டும் பயன்படுத்தலாம். <strong>View</strong> என்பது save செய்யப்பட்ட query — எப்போது வேண்டுமானாலும் table போல பயன்படுத்தலாம்.
+      </div>
+
+      <div class="section-label">📝 Sample Query &amp; Output</div>
+      <pre><code><span class="cm">-- CASE: categorise patients by age</span>
+<span class="kw">SELECT</span> name, age,
+  <span class="kw">CASE</span>
+    <span class="kw">WHEN</span> age &lt; <span class="num">18</span> <span class="kw">THEN</span> <span class="str">'Child'</span>
+    <span class="kw">WHEN</span> age <span class="kw">BETWEEN</span> <span class="num">18</span> <span class="kw">AND</span> <span class="num">60</span> <span class="kw">THEN</span> <span class="str">'Adult'</span>
+    <span class="kw">ELSE</span> <span class="str">'Senior'</span>
+  <span class="kw">END AS</span> age_group
+<span class="kw">FROM</span> patients;
+
+<span class="cm">-- CTE: top-earning doctors per department</span>
+<span class="kw">WITH</span> DeptMax <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> department, <span class="fn">MAX</span>(salary) <span class="kw">AS</span> max_salary
+  <span class="kw">FROM</span> doctors
+  <span class="kw">GROUP BY</span> department
+)
+<span class="kw">SELECT</span> d.name, d.department, d.salary
+<span class="kw">FROM</span> doctors d
+<span class="kw">JOIN</span> DeptMax dm <span class="kw">ON</span> d.department = dm.department
+  <span class="kw">AND</span> d.salary = dm.max_salary;
+
+<span class="cm">-- VIEW: create a reusable appointment summary</span>
+<span class="kw">CREATE VIEW</span> appointment_summary <span class="kw">AS</span>
+<span class="kw">SELECT</span> p.name <span class="kw">AS</span> patient, d.name <span class="kw">AS</span> doctor,
+       d.department, a.appt_date, a.fee, a.status
+<span class="kw">FROM</span> appointments a
+<span class="kw">JOIN</span> patients p <span class="kw">ON</span> a.patient_id = p.patient_id
+<span class="kw">JOIN</span> doctors d <span class="kw">ON</span> a.doctor_id = d.doctor_id;
+
+<span class="cm">-- Conditional Aggregation: count completed vs pending per doctor</span>
+<span class="kw">SELECT</span> doctor_id,
+  <span class="fn">COUNT</span>(<span class="kw">CASE WHEN</span> status = <span class="str">'Completed'</span> <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">END</span>) <span class="kw">AS</span> completed,
+  <span class="fn">COUNT</span>(<span class="kw">CASE WHEN</span> status = <span class="str">'Pending'</span> <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">END</span>) <span class="kw">AS</span> pending
+<span class="kw">FROM</span> appointments
+<span class="kw">GROUP BY</span> doctor_id;</code></pre>
+
+      <div class="output-label">▶ Output: CASE age groups</div>
+      <table class="result">
+        <tbody><tr><th>name</th><th>age</th><th>age_group</th></tr>
+        <tr><td>Arjun Kumar</td><td>34</td><td>Adult</td></tr>
+        <tr><td>Ramesh Babu</td><td>52</td><td>Adult</td></tr>
+        <tr><td>Meenakshi T</td><td>72</td><td>Senior</td></tr>
+      </tbody></table>
+
+      <div class="section-label">❓ Practice Questions</div>
+      <div class="questions">
+
+        <div class="question-card">
+          <span class="q-num">Q1</span>
+          <div class="q-text">Write a <code>CASE</code> statement to label appointment fees as <em>'Low'</em> (&lt;1000), <em>'Medium'</em> (1000–3000), or <em>'High'</em> (&gt;3000).</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">SELECT</span> appt_id, fee,
+  <span class="kw">CASE</span>
+    <span class="kw">WHEN</span> fee &lt; <span class="num">1000</span> <span class="kw">THEN</span> <span class="str">'Low'</span>
+    <span class="kw">WHEN</span> fee <span class="kw">BETWEEN</span> <span class="num">1000</span> <span class="kw">AND</span> <span class="num">3000</span> <span class="kw">THEN</span> <span class="str">'Medium'</span>
+    <span class="kw">ELSE</span> <span class="str">'High'</span>
+  <span class="kw">END AS</span> fee_category
+<span class="kw">FROM</span> appointments;</code></pre>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <span class="q-num">Q2</span>
+          <div class="q-text">Write a <strong>CTE</strong> to first get total fees per doctor, then show only those who collected <strong>more than 50,000</strong>.</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">WITH</span> DoctorRevenue <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> doctor_id, <span class="fn">SUM</span>(fee) <span class="kw">AS</span> total_revenue
+  <span class="kw">FROM</span> appointments
+  <span class="kw">GROUP BY</span> doctor_id
+)
+<span class="kw">SELECT</span> d.name, dr.total_revenue
+<span class="kw">FROM</span> DoctorRevenue dr
+<span class="kw">JOIN</span> doctors d <span class="kw">ON</span> dr.doctor_id = d.doctor_id
+<span class="kw">WHERE</span> dr.total_revenue &gt; <span class="num">50000</span>
+<span class="kw">ORDER BY</span> dr.total_revenue <span class="kw">DESC</span>;</code></pre>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <span class="q-num">Q3</span>
+          <div class="q-text">Create a <strong>VIEW</strong> called <code>active_patients</code> that shows patients who have had at least one appointment in the last year.</div>
+          <button class="reveal-btn" onclick="toggleAnswer(this)">👁 Reveal Answer</button>
+          <div class="answer">
+            <div class="answer-label">✅ Answer</div>
+            <pre><code><span class="kw">CREATE VIEW</span> active_patients <span class="kw">AS</span>
+<span class="kw">SELECT DISTINCT</span> p.patient_id, p.name, p.city
+<span class="kw">FROM</span> patients p
+<span class="kw">INNER JOIN</span> appointments a <span class="kw">ON</span> p.patient_id = a.patient_id
+<span class="kw">WHERE</span> a.appt_date &gt;= <span class="fn">DATE_SUB</span>(<span class="fn">CURDATE</span>(), <span class="kw">INTERVAL</span> <span class="num">1</span> <span class="kw">YEAR</span>);</code></pre>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="project-box">
+        <div class="proj-title">🏥 Final Hospital Project <span>All Topics</span></div>
+        <p><strong>🎉 You've reached the final project! Combine everything you've learned:</strong></p>
+        <ul>
+          <li><strong>CASE:</strong> Create patient risk categories based on age and visit frequency.</li>
+          <li><strong>CTE:</strong> Build a monthly revenue report using a CTE for sub-totals.</li>
+          <li><strong>VIEW:</strong> Create <code>doctor_performance_view</code> showing doctor name, department, total appointments, total revenue, and rank.</li>
+          <li><strong>Window Functions:</strong> Running total of hospital revenue by month.</li>
+          <li><strong>Conditional Aggregation:</strong> Pivot-style report — count of Completed / Pending / Cancelled per department.</li>
+          <li><strong>Full JOIN + GROUP BY + HAVING:</strong> Find departments where completed appointment fees exceed 100,000.</li>
+        </ul>
+        <p style="margin-top:.8rem;color:#a5f3c0;font-weight:600;">🏆 Complete this final project and you have a real portfolio-ready SQL project!</p>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<footer>
+  <p>Built from your Data Analytics Roadmap PDF • Hospital Project Theme • 10 SQL Topics Covered</p>
+  <p style="margin-top:.4rem;">Practice daily — consistency is the key to mastering SQL! 💪</p>
+</footer>
+
+<script>
+  function toggleAnswer(btn) {
+    const answer = btn.nextElementSibling;
+    const isVisible = answer.classList.contains('visible');
+    answer.classList.toggle('visible', !isVisible);
+    btn.textContent = isVisible ? '👁 Reveal Answer' : '🙈 Hide Answer';
+  }
+
+  // Simple progress tracker — mark topic as visited on scroll
+  const topics = document.querySelectorAll('.topic');
+  const visited = new Set();
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        visited.add(e.target.id);
+        const pct = Math.round((visited.size / topics.length) * 100);
+        document.getElementById('progFill').style.width = pct + '%';
+        document.getElementById('progLabel').textContent =
+          visited.size + ' of ' + topics.length + ' topics visited';
+      }
+    });
+  }, { threshold: 0.15 });
+  topics.forEach(t => observer.observe(t));
+</script>
+
+
+</body></html>
